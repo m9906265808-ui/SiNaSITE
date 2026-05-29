@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiNa</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:tahoma;
+}
+
+body{
+    background:
+    radial-gradient(circle at top,#ff2ea6 0%,transparent 25%),
+    radial-gradient(circle at bottom,#00bfff 0%,transparent 25%),
+    #050510;
+    overflow-x:hidden;
+    min-height:100vh;
+    color:white;
+    cursor:none;
+}
+
+/* CURSOR */
+
+.cursor{
+    width:30px;
+    height:30px;
+    border:2px solid #00eeff;
+    border-radius:50%;
+    position:fixed;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:99999;
+    transition:.1s;
+    box-shadow:0 0 20px #00eeff;
+}
+
+.cursor.active{
+    transform:translate(-50%,-50%) scale(.5);
+    background:#ff2ea6;
+}
+
+/* SHOOTING STARS */
+
+.stars span{
+    position:absolute;
+    width:3px;
+    height:120px;
+    background:linear-gradient(transparent,#00eeff);
+    animation:shoot 6s linear infinite;
+    opacity:.7;
+}
+
+@keyframes shoot{
+    0%{
+        transform:translateY(-200px) translateX(0) rotate(45deg);
+    }
+    100%{
+        transform:translateY(1200px) translateX(600px) rotate(45deg);
+    }
+}
+
+.stars span:nth-child(1){left:10%;animation-delay:0s;}
+.stars span:nth-child(2){left:30%;animation-delay:1s;}
+.stars span:nth-child(3){left:50%;animation-delay:2s;}
+.stars span:nth-child(4){left:70%;animation-delay:3s;}
+.stars span:nth-child(5){left:90%;animation-delay:4s;}
+
+header{
+    text-align:center;
+    padding:40px;
+}
+
+header h1{
+    font-size:70px;
+    color:#fff;
+    text-shadow:0 0 20px #ff2ea6,0 0 40px #00eeff;
+    letter-spacing:10px;
+}
+
+.container{
+    width:90%;
+    margin:auto;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:30px;
+    margin-top:40px;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.2);
+    backdrop-filter:blur(10px);
+    min-height:220px;
+    border-radius:25px;
+    padding:30px;
+    transition:.4s;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 20px rgba(0,255,255,.3);
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.03);
+    box-shadow:0 0 40px #ff2ea6;
+}
+
+.card::before{
+    content:'';
+    position:absolute;
+    width:200%;
+    height:5px;
+    background:linear-gradient(to right,#ff2ea6,#00eeff);
+    top:0;
+    left:-100%;
+    animation:move 3s linear infinite;
+}
+
+@keyframes move{
+    100%{
+        left:100%;
+    }
+}
+
+.card h2{
+    font-size:28px;
+    margin-bottom:20px;
+    color:#00eeff;
+}
+
+.card p{
+    line-height:2;
+}
+
+.page{
+    display:none;
+    animation:fade .5s;
+    margin-top:40px;
+}
+
+@keyframes fade{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+.back{
+    padding:12px 25px;
+    border:none;
+    border-radius:15px;
+    background:#ff2ea6;
+    color:white;
+    cursor:pointer;
+    margin-bottom:20px;
+    font-size:18px;
+}
+
+.startBtn{
+    margin-top:25px;
+    padding:15px 30px;
+    background:#00bfff;
+    border:none;
+    border-radius:20px;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.optionBox{
+    margin-top:25px;
+    background:rgba(255,255,255,0.05);
+    border-radius:20px;
+    padding:25px;
+    border:1px solid rgba(255,255,255,.2);
+}
+
+.optionBox h3{
+    color:#ff2ea6;
+    margin-bottom:20px;
+}
+
+textarea,input,select{
+    width:100%;
+    margin-top:10px;
+    padding:15px;
+    background:#111827;
+    border:none;
+    color:white;
+    border-radius:12px;
+    font-size:16px;
+}
+
+.saveBtn{
+    margin-top:15px;
+    padding:12px 25px;
+    border:none;
+    border-radius:15px;
+    background:#00eeff;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.saved{
+    margin-top:20px;
+    border:1px solid #00eeff;
+    border-radius:15px;
+    padding:15px;
+    min-height:60px;
+    background:rgba(0,0,0,.4);
+}
+
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+    overflow:auto;
+}
+
+table th,table td{
+    border:1px solid rgba(255,255,255,.2);
+    padding:15px;
+    text-align:center;
+}
+
+table th{
+    background:#ff2ea6;
+}
+
+.motiv{
+    position:fixed;
+    font-size:12px;
+    opacity:.15;
+    color:white;
+    pointer-events:none;
+    animation:float 8s linear infinite;
+}
+
+@keyframes float{
+    0%{transform:translateY(0);}
+    100%{transform:translateY(-40px);}
+}
+
+.wheel{
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    border:10px solid white;
+    margin:30px auto;
+    position:relative;
+    overflow:hidden;
+    transition:5s;
+}
+
+.spinBtn{
+    display:block;
+    margin:auto;
+    padding:15px 30px;
+    background:#ff2ea6;
+    border:none;
+    border-radius:20px;
+    color:white;
+    cursor:pointer;
+}
+
+.result{
+    text-align:center;
+    margin-top:20px;
+    font-size:24px;
+    color:#00eeff;
+}
+
+.musicCard{
+    padding:25px;
+    background:#111827;
+    border-radius:20px;
+    margin-top:20px;
+}
+
+.linkCard{
+    padding:50px;
+    text-align:center;
+    background:linear-gradient(45deg,#ff2ea6,#00bfff);
+    border-radius:25px;
+    margin-top:20px;
+    cursor:pointer;
+    font-size:30px;
+}
+
+@media(max-width:700px){
+    header h1{
+        font-size:45px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="cursor"></div>
+
+<div class="stars">
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+</div>
+
+<header>
+<h1>SiNa</h1>
+</header>
+
+<div class="container">
+
+<!-- HOME -->
+
+<div id="home">
+
+<div class="cards">
+
+<div class="card" onclick="openPage('money')">
+<h2>1. Money Management</h2>
+<p>مدیریت کامل پول ، بدهی ، خرج ها و آینده</p>
+</div>
+
+<div class="card" onclick="openPage('food')">
+<h2>2. Food / Calorie</h2>
+<p>مدیریت غذا ، کالری و بهبود زندگی</p>
+</div>
+
+<div class="card" onclick="openPage('ai')">
+<h2>3. AI Assistant</h2>
+<p>مشورت با هوش مصنوعی</p>
+</div>
+
+<div class="card" onclick="openPage('note')">
+<h2>4. Notebook</h2>
+<p>دفتر غم ها و یادداشت های سینا</p>
+</div>
+
+<div class="card" onclick="openPage('discipline')">
+<h2>5. Discipline</h2>
+<p>عادت ها ، دیسیپلین و گردونه مجازات</p>
+</div>
+
+<div class="card" onclick="openPage('girls')">
+<h2>6. Girl Friends</h2>
+<p>ویترین دخترها 😎</p>
+</div>
+
+<div class="card" onclick="openPage('music')">
+<h2>7. Favorite Music</h2>
+<p>آهنگ های مورد علاقه</p>
+</div>
+
+<div class="card" onclick="openPage('vitto')">
+<h2>8. Vitto Parsa</h2>
+<p>ویتو پارسا یادت نره</p>
+</div>
+
+<div class="card" onclick="openPage('style')">
+<h2>9. My Best Styles</h2>
+<p>مدیریت استایل</p>
+</div>
+
+<div class="card" onclick="openPage('dream')">
+<h2>10. My Dreams</h2>
+<p>آرزو ها و هدف ها</p>
+</div>
+
+<div class="card" onclick="openPage('gym')">
+<h2>11. GYM</h2>
+<p>رکورد های باشگاه</p>
+</div>
+
+<div class="card" onclick="openPage('sleep')">
+<h2>12. Sleep Management</h2>
+<p>مدیریت خواب</p>
+</div>
+
+</div>
+</div>
+
+<!-- MONEY -->
+
+<div class="page" id="money">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>سینا ( ایلان ماسک ) ، در اینجا پول خود را مدیریت کن</h2>
+
+<button class="startBtn" onclick="showOptions('moneyOptions')">شروع کن پسر</button>
+
+<div id="moneyOptions" style="display:none;">
+
+<div class="optionBox">
+<h3>موجودی کل</h3>
+<textarea id="money1"></textarea>
+<button class="saveBtn" onclick="saveData('money1','save1')">سیو کردن</button>
+<div class="saved" id="save1"></div>
+</div>
+
+<div class="optionBox">
+<h3>بدهی ها</h3>
+<textarea id="money2"></textarea>
+<button class="saveBtn" onclick="saveData('money2','save2')">سیو کردن</button>
+<div class="saved" id="save2"></div>
+</div>
+
+<div class="optionBox">
+<h3>طلب ها</h3>
+<textarea id="money3"></textarea>
+<button class="saveBtn" onclick="saveData('money3','save3')">سیو کردن</button>
+<div class="saved" id="save3"></div>
+</div>
+
+<div class="optionBox">
+<h3>خرج های آینده</h3>
+<textarea id="money4"></textarea>
+<button class="saveBtn" onclick="saveData('money4','save4')">سیو کردن</button>
+<div class="saved" id="save4"></div>
+</div>
+
+<div class="optionBox">
+<h3>حقوق ماهیانه</h3>
+<textarea id="money5"></textarea>
+<button class="saveBtn" onclick="saveData('money5','save5')">سیو کردن</button>
+<div class="saved" id="save5"></div>
+</div>
+
+<div class="optionBox">
+<h3>هزینه های رنک آپ</h3>
+<textarea id="money6"></textarea>
+<button class="saveBtn" onclick="saveData('money6','save6')">سیو کردن</button>
+<div class="saved" id="save6"></div>
+</div>
+
+</div>
+</div>
+
+<!-- FOOD -->
+
+<div class="page" id="food">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>سینا ، در اینجا می توانی کالری غذا هایی که کوفت میکنی را مدیریت کنی</h2>
+
+<button class="startBtn" onclick="showOptions('foodOptions')">شروع کن پسر</button>
+
+<div id="foodOptions" style="display:none;">
+
+<div class="optionBox">
+<h3>امروز چی خوردم ؟</h3>
+<textarea id="food1"></textarea>
+<button class="saveBtn" onclick="saveData('food1','foodsave1')">سیو</button>
+<div class="saved" id="foodsave1"></div>
+</div>
+
+<div class="optionBox">
+<h3>جدول کالری غذا ها</h3>
+
+<table>
+<tr>
+<th>نام غذا</th>
+<th>کالری</th>
+<th>قیمت</th>
+<th>پروتئین</th>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+</div>
+
+<!-- AI -->
+
+<div class="page" id="ai">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>می توانی با من مشورت کنی 😔</h2>
+
+<button class="startBtn" onclick="showOptions('aiOptions')">شروع کن پسر</button>
+
+<div id="aiOptions" style="display:none;">
+
+<div class="linkCard" onclick="window.open('https://chatgpt.com/')">
+🤖 ورود به ChatGPT
+</div>
+
+</div>
+</div>
+
+<!-- NOTE -->
+
+<div class="page" id="note">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>دفتر یادداشت سینای عزیز</h2>
+
+<button class="startBtn" onclick="showOptions('noteOptions')">شروع کن پسر</button>
+
+<div id="noteOptions" style="display:none;">
+
+<div class="optionBox" style="background:#1b1b2d;">
+<h3>غم های امروزت</h3>
+<textarea id="note1"></textarea>
+
+<h3 style="margin-top:20px;">راهکار حل مشکلت سینا</h3>
+<textarea id="note2"></textarea>
+
+<button class="saveBtn" onclick="saveData('note1','notesave')">ثبت</button>
+
+<div class="saved" id="notesave"></div>
+
+</div>
+
+</div>
+</div>
+
+<!-- DISCIPLINE -->
+
+<div class="page" id="discipline">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>دیسیپلین سینا</h2>
+
+<button class="startBtn" onclick="showOptions('disOptions')">شروع کن پسر</button>
+
+<div id="disOptions" style="display:none;">
+
+<div class="optionBox">
+<h3>عادت های روزانه</h3>
+
+<textarea id="habit"></textarea>
+
+<select>
+<option>A - عالی</option>
+<option>B - خوب</option>
+<option>C - افتضاح</option>
+</select>
+
+<button class="saveBtn" onclick="saveData('habit','habitsave')">ثبت کردن</button>
+
+<div class="saved" id="habitsave"></div>
+
+</div>
+
+<div class="optionBox">
+
+<h3>گردونه مجازات</h3>
+
+<div class="wheel" id="wheel"></div>
+
+<button class="spinBtn" onclick="spinWheel()">بچرخون</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+</div>
+</div>
+
+<!-- GIRLS -->
+
+<div class="page" id="girls">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>هوی پسرک محبوب ، به ویترین دخترا سر بزن</h2>
+
+<button class="startBtn" onclick="showOptions('girlOptions')">شروع کن پسر</button>
+
+<div id="girlOptions" style="display:none;">
+
+<table>
+<tr>
+<th>نام</th>
+<th>شماره</th>
+<th>آیدی</th>
+<th>تولد</th>
+<th>عادت ها</th>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+</tr>
+
+</table>
+
+</div>
+</div>
+
+<!-- MUSIC -->
+
+<div class="page" id="music">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>آهنگ های مورد علاقت رو بنویس</h2>
+
+<button class="startBtn" onclick="showOptions('musicOptions')">شروع کن پسر</button>
+
+<div id="musicOptions" style="display:none;">
+
+<div class="musicCard">
+<h3>موزیک برای حال خوب</h3>
+<textarea></textarea>
+</div>
+
+<div class="musicCard">
+<h3>موزیک برای حال بد</h3>
+<textarea></textarea>
+</div>
+
+</div>
+</div>
+
+<!-- VITTO -->
+
+<div class="page" id="vitto">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>ویتو پارسا یادت نره</h2>
+
+<button class="startBtn" onclick="showOptions('vittoOptions')">شروع کن پسر</button>
+
+<div id="vittoOptions" style="display:none;">
+
+<div class="linkCard"
+onclick="window.open('https://www.youtube.com/@Vittoparsa')">
+🔥 VITTO PARSA 🔥
+</div>
+
+</div>
+</div>
+
+<!-- STYLE -->
+
+<div class="page" id="style">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>با این استایل ها دخترکش تر میشی</h2>
+
+<button class="startBtn" onclick="showOptions('styleOptions')">شروع کن پسر</button>
+
+<div id="styleOptions" style="display:none;">
+
+<table>
+<tr>
+<th>کلاه</th>
+<th>تیشرت</th>
+<th>شلوار</th>
+<th>جوراب</th>
+<th>امتیاز</th>
+</tr>
+
+<tr>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td><input></td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+
+</table>
+
+<button class="saveBtn">ثبت استایل</button>
+
+</div>
+</div>
+
+<!-- DREAM -->
+
+<div class="page" id="dream">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>آرزو هایی که باید بهش برسی</h2>
+
+<button class="startBtn" onclick="showOptions('dreamOptions')">شروع کن پسر</button>
+
+<div id="dreamOptions" style="display:none;">
+
+<div class="optionBox">
+<textarea placeholder="آرزو های من..."></textarea>
+<button class="saveBtn">ثبت</button>
+</div>
+
+</div>
+</div>
+
+<!-- GYM -->
+
+<div class="page" id="gym">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>چه رکورد هایی تو باشگاه زدی ؟</h2>
+
+<button class="startBtn" onclick="showOptions('gymOptions')">شروع کن پسر</button>
+
+<div id="gymOptions" style="display:none;">
+
+<div class="optionBox">
+<textarea placeholder="نام دستگاه + رکورد"></textarea>
+<button class="saveBtn"
+onclick="alert('آفرین سینا تو بهترینی 🔥')">
+ثبت
+</button>
+</div>
+
+</div>
+</div>
+
+<!-- SLEEP -->
+
+<div class="page" id="sleep">
+
+<button class="back" onclick="goBack()">بازگشت</button>
+
+<h2>خوابت رو مدیریت کن بچه ی دوساله</h2>
+
+<button class="startBtn" onclick="showOptions('sleepOptions')">شروع کن پسر</button>
+
+<div id="sleepOptions" style="display:none;">
+
+<div class="optionBox">
+
+<label>ساعت خواب</label>
+<input type="time" id="sleep1">
+
+<label>ساعت بیداری</label>
+<input type="time" id="sleep2">
+
+<button class="saveBtn" onclick="calcSleep()">محاسبه</button>
+
+<div class="saved" id="sleepResult"></div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* CURSOR */
+
+const cursor=document.querySelector(".cursor");
+
+document.addEventListener("mousemove",(e)=>{
+cursor.style.left=e.clientX+"px";
+cursor.style.top=e.clientY+"px";
+});
+
+document.querySelectorAll("button,.card,input,textarea").forEach(el=>{
+el.addEventListener("mouseenter",()=>{
+cursor.classList.add("active");
+});
+
+el.addEventListener("mouseleave",()=>{
+cursor.classList.remove("active");
+});
+});
+
+/* PAGE */
+
+function openPage(id){
+document.getElementById("home").style.display="none";
+
+document.querySelectorAll(".page").forEach(p=>{
+p.style.display="none";
+});
+
+document.getElementById(id).style.display="block";
+}
+
+function goBack(){
+document.getElementById("home").style.display="block";
+
+document.querySelectorAll(".page").forEach(p=>{
+p.style.display="none";
+});
+}
+
+function showOptions(id){
+document.getElementById(id).style.display="block";
+}
+
+/* SAVE */
+
+function saveData(inputId,saveId){
+
+let value=document.getElementById(inputId).value;
+
+localStorage.setItem(inputId,value);
+
+document.getElementById(saveId).innerHTML=value;
+}
+
+window.onload=()=>{
+
+document.querySelectorAll("textarea").forEach(t=>{
+
+let val=localStorage.getItem(t.id);
+
+if(val){
+t.value=val;
+}
+
+});
+
+};
+
+/* WHEEL */
+
+const punishments=[
+"200 اسکات",
+"200 شنا",
+"200 دراز نشست",
+"250 تا از هر کدوم",
+"3 عادت جدید",
+"2 ساعت درس",
+"فردا گوشی ممنوع",
+"پوچ 😎"
+];
+
+function spinWheel(){
+
+let wheel=document.getElementById("wheel");
+
+let random=Math.floor(Math.random()*3600);
+
+wheel.style.transform="rotate("+random+"deg)";
+
+let result=punishments[Math.floor(Math.random()*punishments.length)];
+
+setTimeout(()=>{
+
+document.getElementById("result").innerHTML=
+"مجازات : "+result+"<br><br>❌ قهرم باهات / ✅ بخشیدمت";
+
+},5000);
+}
+
+/* SLEEP */
+
+function calcSleep(){
+
+let s1=document.getElementById("sleep1").value;
+let s2=document.getElementById("sleep2").value;
+
+let start=s1.split(":");
+let end=s2.split(":");
+
+let h1=parseInt(start[0]);
+let h2=parseInt(end[0]);
+
+let total=h2-h1;
+
+if(total<0){
+total+=24;
+}
+
+let text="تو "+total+" ساعت خوابیدی<br>";
+
+if(total<6){
+text+="😵 ای وای تو کم خوابیدی";
+}
+else if(total>8){
+text+="😴 مرتیکه ی تنبل چه خبرته؟؟";
+}
+else{
+text+="🔥 خواب عالی";
+}
+
+document.getElementById("sleepResult").innerHTML=text;
+}
+
+/* MOTIVATION */
+
+const msgs=[
+"تو هیولا میشی",
+"ادامه بده",
+"سینا قوی تر شو",
+"موفقیت نزدیکه",
+"تسلیم نشو",
+"دیسیپلین = قدرت"
+];
+
+for(let i=0;i<40;i++){
+
+let d=document.createElement("div");
+
+d.className="motiv";
+
+d.innerText=msgs[Math.floor(Math.random()*msgs.length)];
+
+d.style.left=Math.random()*100+"%";
+
+d.style.top=Math.random()*100+"%";
+
+document.body.appendChild(d);
+}
+
+</script>
+
+</body>
+</html>
